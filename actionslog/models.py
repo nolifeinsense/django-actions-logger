@@ -4,7 +4,10 @@ from __future__ import unicode_literals
 from django.conf import settings
 from django.contrib.admin.utils import quote
 from django.contrib.contenttypes.models import ContentType
-from django.core.urlresolvers import NoReverseMatch, reverse
+try:
+    from django.urls import NoReverseMatch, reverse
+except ImportError:
+    from django.core.urlresolvers import NoReverseMatch, reverse
 from django.db import models
 from django.db.models import QuerySet, Q
 from django.utils.encoding import python_2_unicode_compatible, smart_text
@@ -71,7 +74,7 @@ class LogActionManager(models.Manager):
 
             # Delete log entries with the same pk as a newly created model.
             # This should only be necessary when an pk is used twice.
-            if kwargs.get('action', None) is LogAction.CREATE:
+            if kwargs.get('action', None) is app_conf.CREATE:
                 is_obj_exists = self.filter(
                     content_type=kwargs.get('content_type'),
                     object_id=kwargs.get('object_id')
